@@ -51,7 +51,7 @@ router.delete("/merchants/:id", (req, res, next) => {
   const { id } = req.params;
   let deletedMerchant;
 
-  merchants = merchants.fiter(merchant => {
+  merchants = merchants.filter(merchant => {
     //filtering like this to save the deleted merchant
     if (merchant.id == id) {
       deletedMerchant = { ...merchant };
