@@ -11,8 +11,8 @@ merchants = merchants.map(merchant => ({
   bids: getRandomBids(bids)
 }));
 
-router.get("/merchants(/:pagination)?", (req, res, next) => {
-  const { pagination } = req.params;
+router.get("/merchants", (req, res, next) => {
+  const { pagination } = req.query;
   const merchantsChunks = _.chunk(merchants, 10);
 
   if (pagination) {
@@ -22,7 +22,18 @@ router.get("/merchants(/:pagination)?", (req, res, next) => {
       res.json([]);
     }
   } else {
-    res.json(merchants);
+    res.json(merchants[0]);
+  }
+});
+
+router.get("/merchants/:id", (req, res, next) => {
+  const { id } = req.params;
+  const merchant = merchants.find(merchant => merchant.id == id);
+
+  if (merchant) {
+    res.json(merchant);
+  } else {
+    return next(new Error("user not found"));
   }
 });
 
