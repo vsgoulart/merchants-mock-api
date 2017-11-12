@@ -12,17 +12,23 @@ merchants = merchants.map(merchant => ({
 }));
 
 router.get("/merchants", (req, res, next) => {
-  const { pagination } = req.query;
+  const { page } = req.query;
   const merchantsChunks = _.chunk(merchants, 10);
 
-  if (pagination) {
-    if (pagination < merchantsChunks.length) {
-      res.json(merchantsChunks[pagination]);
+  if (page) {
+    if (page < merchantsChunks.length) {
+      res.json({
+        lastPage: merchantsChunks.length - 1,
+        result: merchantsChunks[page]
+      });
     } else {
-      res.json([]);
+      res.json({ lastPage: merchantsChunks.length - 1, result: [] });
     }
   } else {
-    res.json(merchants[0]);
+    res.json({
+      lastPage: merchantsChunks.length - 1,
+      result: merchantsChunks[0]
+    });
   }
 });
 
@@ -31,7 +37,7 @@ router.get("/merchants/:id", (req, res, next) => {
   const merchant = merchants.find(merchant => merchant.id == id);
 
   if (merchant) {
-    res.json(merchant);
+    res.json({ result: merchant });
   } else {
     return next(new Error("user not found"));
   }
@@ -40,7 +46,7 @@ router.get("/merchants/:id", (req, res, next) => {
 router.post("/merchants", (req, res, next) => {
   merchants = [...merchants, { ...req.body }];
 
-  res.json(req.body);
+  res.json({ result: req.body });
 });
 
 router.put("/merchants/:id", (req, res, next) => {
@@ -55,7 +61,7 @@ router.put("/merchants/:id", (req, res, next) => {
     }
   });
 
-  res.json(req.body);
+  res.json({ result: req.body });
 });
 
 router.delete("/merchants/:id", (req, res, next) => {
@@ -74,7 +80,7 @@ router.delete("/merchants/:id", (req, res, next) => {
   });
 
   if (deletedMerchant) {
-    res.json(deletedMerchant);
+    res.json({ result: deletedMerchant });
   } else {
     next(new Error("Merchant not found"));
   }
