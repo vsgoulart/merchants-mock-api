@@ -29,7 +29,7 @@ router.get("/merchants/:id", (req, res, next) => {
 });
 
 router.post("/merchants", (req, res, next) => {
-  const newMerchant = { ...req.body, id: ++lastID };
+  const newMerchant = { ...req.body, id: ++lastID, bids: [] };
   merchants = [...merchants, { ...newMerchant }];
 
   res.json({ result: newMerchant });
