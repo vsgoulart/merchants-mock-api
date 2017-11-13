@@ -1,10 +1,10 @@
 "use strict";
 
 const router = require("express").Router();
-const _ = require("lodash");
 const bids = require("../data/bids.json");
 let merchants = require("../data/merchants.json");
 const { getRandomBids } = require("../utils/bids");
+let lastID = merchants[merchants.length - 1].id;
 
 merchants = merchants.map(merchant => ({
   ...merchant,
@@ -13,23 +13,8 @@ merchants = merchants.map(merchant => ({
 
 router.get("/merchants", (req, res, next) => {
   const { page } = req.query;
-  const merchantsChunks = _.chunk(merchants, 10);
 
-  if (page) {
-    if (page < merchantsChunks.length) {
-      res.json({
-        lastPage: merchantsChunks.length - 1,
-        result: merchantsChunks[page]
-      });
-    } else {
-      res.json({ lastPage: merchantsChunks.length - 1, result: [] });
-    }
-  } else {
-    res.json({
-      lastPage: merchantsChunks.length - 1,
-      result: merchantsChunks[0]
-    });
-  }
+  res.json({ result: merchants });
 });
 
 router.get("/merchants/:id", (req, res, next) => {
@@ -44,9 +29,10 @@ router.get("/merchants/:id", (req, res, next) => {
 });
 
 router.post("/merchants", (req, res, next) => {
-  merchants = [...merchants, { ...req.body }];
+  const newMerchant = { ...req.body, id: ++lastID };
+  merchants = [...merchants, { ...newMerchant }];
 
-  res.json({ result: req.body });
+  res.json({ result: newMerchant });
 });
 
 router.put("/merchants/:id", (req, res, next) => {
